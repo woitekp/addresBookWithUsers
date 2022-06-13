@@ -251,7 +251,6 @@ int editContactInFile( Addressee addresseeToEdit, int idOfAddresseeToEdit ) {
     tempFile.close();
     std::remove( "addresBook.txt" );
     std::rename( "temp", "addresBook.txt" );
-    std::remove( "temp" );
     return 0;
 }
 
@@ -301,7 +300,7 @@ void editContact ( std::vector<Addressee> &addressees ) {
     return;
 }
 
-int removeContactFromFile( int idOfAddresseeToRemove ) {
+int removeContactFromFile( int idOfAddresseeToRemove, int &lastAddresseeID ) {
     std::fstream file;
     file.open( "addresBook.txt", std::ios::in );
 	if( !file.good() ) {
@@ -317,22 +316,23 @@ int removeContactFromFile( int idOfAddresseeToRemove ) {
         return 2;
     }
     std::string line;
+    lastAddresseeID = 0;
     while ( getline( file, line ) ) {
         size_t delimiterPosition = line.find( "|" );
         int ID = atoi( line.substr( 0, delimiterPosition ).c_str() );
         if ( ID != idOfAddresseeToRemove ) {
             tempFile << line << std::endl;
+            lastAddresseeID = ID;
         }
     }
     file.close();
     tempFile.close();
     std::remove( "addresBook.txt" );
     std::rename( "temp", "addresBook.txt" );
-    std::remove( "temp" );
     return 0;
 }
 
-void removeContact ( std::vector<Addressee> &addressees ) {
+void removeContact ( std::vector<Addressee> &addressees, int &lastAddresseeID ) {
     system( "cls" );
     std::cout << "Please provide the ID of addressee to remove: ";
     int idOfAddresseeToRemove = loadInteger();
@@ -341,7 +341,7 @@ void removeContact ( std::vector<Addressee> &addressees ) {
                 std::cout << "\nIf want to remove this contact, press 'y': ";
                 char userChoice = loadCharacter();
                 if ( userChoice == 'y' ) {
-                    if ( removeContactFromFile( idOfAddresseeToRemove ) == 0 ){
+                    if ( removeContactFromFile( idOfAddresseeToRemove, lastAddresseeID ) == 0 ){
                         addressees.erase( addressees.begin()+i );
                         std::cout << "\nContact has been removed";
                     }
@@ -388,7 +388,6 @@ int changePasswordInFile( User userToEdit, int userID ) {
     tempFile.close();
     std::remove( "users.txt" );
     std::rename( "temp", "users.txt" );
-    std::remove( "temp" );
     return 0;
 }
 
@@ -431,7 +430,7 @@ void addressBookMenu ( int userID, std::vector<User> &users ) {
             case '2': searchContactsMenu( addressees ); break;
             case '3': addContact( addressees, userID, lastAddresseeID ); break;
             case '4': editContact( addressees ); break;
-            case '5': removeContact( addressees ); break;
+            case '5': removeContact( addressees, lastAddresseeID ); break;
             case '6': changeUserPassword( userID, users ); break;
             case '9': return;
         }
