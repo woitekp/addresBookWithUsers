@@ -219,14 +219,14 @@ int editContactInFile( Addressee addresseeToEdit, int idOfAddresseeToEdit ) {
     std::fstream file;
     file.open( "addresBook.txt", std::ios::in );
 	if( !file.good() ) {
-        std::cout << "ERROR! Addres book can't be opened. Failed to remove contact!";
+        std::cout << "ERROR! Addres book can't be opened. Failed to edit contact!";
         Sleep(2000);
         return 1;
     }
     std::fstream tempFile;
     tempFile.open( "temp", std::ios::out | std::ios::app );
 	if( !tempFile.good() ) {
-        std::cout << "ERROR occured! Failed to remove contact!";
+        std::cout << "ERROR occured! Failed to edit contact!";
         Sleep(2000);
         return 2;
     }
