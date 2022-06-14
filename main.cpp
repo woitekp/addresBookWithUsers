@@ -177,7 +177,7 @@ void searchContactsMenu( std::vector<Addressee> &addressees ) {
     }
 }
 
-void addContact ( std::vector<Addressee> &addressees, int ownerID, int &lastAddresseeID ) {
+int addContact ( std::vector<Addressee> &addressees, int ownerID, int lastAddresseeID ) {
     system("cls");
 
 	std::fstream file;
@@ -185,11 +185,11 @@ void addContact ( std::vector<Addressee> &addressees, int ownerID, int &lastAddr
 	if( ! file.good() ) {
         std::cout << "ERROR! Addres book can't be opened";
         Sleep(2000);
-        return;
+        return -1;
     }
 
     Addressee addresseeToAdd;
-    lastAddresseeID++;
+    int lastAddreseeID = lastAddresseeID++;
     addresseeToAdd.ID = lastAddresseeID;
 
     file << addresseeToAdd.ID << "|";
@@ -214,6 +214,7 @@ void addContact ( std::vector<Addressee> &addressees, int ownerID, int &lastAddr
     addressees.push_back( addresseeToAdd );
     std::cout << "Addressee added";
     Sleep(2000);
+    return lastAddreseeID;
 }
 
 int editContactInFile( Addressee addresseeToEdit, int idOfAddresseeToEdit ) {
@@ -435,14 +436,19 @@ void addressBookMenu ( int userID, std::vector<User> &users ) {
         switch ( userChoice ) {
             case '1': displayContacts( addressees ); break;
             case '2': searchContactsMenu( addressees ); break;
-            case '3': addContact( addressees, userID, lastAddresseeID ); break;
+            case '3': {
+                        int addContactResult = addContact( addressees, userID, lastAddresseeID );
+                        if ( addContactResult > 0 )
+                        { lastAddresseeID = addContactResult; }
+                        break;
+            }
             case '4': editContact( addressees ); break;
             case '5': {
                         int removeContactResult = removeContact( addressees );
                         if ( removeContactResult >= 0 )
                           { lastAddresseeID = removeContactResult; }
                         break;
-                      }
+            }
             case '6': changeUserPassword( userID, users ); break;
             case '9': return;
         }
