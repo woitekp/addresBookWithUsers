@@ -79,10 +79,11 @@ Addressee loadAddresseeDataFromLine ( std::string lineToGetDataFrom ) {
     return addresseeToLoad;
 }
 
-void initializeAddresBookFromFile ( int userID, std::vector <Addressee> &addressees, int &lastAddresseeID ) {
+int initializeAddresBookFromFile ( int userID, std::vector <Addressee> &addressees ) {
     std::fstream file;
     std::string line;
     Addressee addressee;
+    int lastAddresseeID = 0;
     file.open( "addresBook.txt", std::ios::in) ;
 
     if( file.good() ) {
@@ -97,7 +98,7 @@ void initializeAddresBookFromFile ( int userID, std::vector <Addressee> &address
     else {
         file.close();
     }
-    return;
+    return lastAddresseeID;
 }
 
 void displayContacts ( std::vector <Addressee> &addressees ) {
@@ -418,8 +419,8 @@ void changeUserPassword ( int userID, std::vector<User> &users ) {
 
 void addressBookMenu ( int userID, std::vector<User> &users ) {
     std::vector <Addressee> addressees;
-    int lastAddresseeID = 0;
-    initializeAddresBookFromFile( userID, addressees, lastAddresseeID );
+    int lastAddresseeID = initializeAddresBookFromFile( userID, addressees );
+
     char userChoice;
     while ( true ) {
         system( "cls" );
