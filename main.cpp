@@ -185,11 +185,11 @@ int addContact ( std::vector<Addressee> &addressees, int ownerID, int lastAddres
 	if( ! file.good() ) {
         std::cout << "ERROR! Addres book can't be opened";
         Sleep(2000);
-        return -1;
+        return lastAddresseeID;
     }
 
     Addressee addresseeToAdd;
-    int lastAddreseeID = lastAddresseeID++;
+    lastAddresseeID++;
     addresseeToAdd.ID = lastAddresseeID;
 
     file << addresseeToAdd.ID << "|";
@@ -214,7 +214,7 @@ int addContact ( std::vector<Addressee> &addressees, int ownerID, int lastAddres
     addressees.push_back( addresseeToAdd );
     std::cout << "Addressee added";
     Sleep(2000);
-    return lastAddreseeID;
+    return lastAddresseeID;
 }
 
 int editContactInFile( Addressee addresseeToEdit, int idOfAddresseeToEdit ) {
@@ -334,7 +334,7 @@ int removeContactFromFile( int idOfAddresseeToRemove ) {
     return lastAddresseeID;
 }
 
-int removeContact ( std::vector<Addressee> &addressees ) {
+int removeContact ( std::vector<Addressee> &addressees, int lastAddresseeID ) {
     system( "cls" );
     std::cout << "Please provide the ID of addressee to remove: ";
     int idOfAddresseeToRemove = loadInteger();
@@ -343,9 +343,10 @@ int removeContact ( std::vector<Addressee> &addressees ) {
                 std::cout << "\nIf want to remove this contact, press 'y': ";
                 char userChoice = loadCharacter();
                 if ( userChoice == 'y' ) {
-                    int lastAddresseeID = removeContactFromFile( idOfAddresseeToRemove );
-                    if ( lastAddresseeID >= 0 ){
+                    int lastAddresseeIdTemp = removeContactFromFile( idOfAddresseeToRemove );
+                    if ( lastAddresseeIdTemp >= 0 ){
                         addressees.erase( addressees.begin()+i );
+                        lastAddresseeID = lastAddresseeIdTemp;
                         std::cout << "\nContact has been removed";
                     }
                     else
@@ -436,19 +437,9 @@ void addressBookMenu ( int userID, std::vector<User> &users ) {
         switch ( userChoice ) {
             case '1': displayContacts( addressees ); break;
             case '2': searchContactsMenu( addressees ); break;
-            case '3': {
-                        int addContactResult = addContact( addressees, userID, lastAddresseeID );
-                        if ( addContactResult > 0 )
-                        { lastAddresseeID = addContactResult; }
-                        break;
-            }
+            case '3': lastAddresseeID = addContact( addressees, userID, lastAddresseeID ); break;
             case '4': editContact( addressees ); break;
-            case '5': {
-                        int removeContactResult = removeContact( addressees );
-                        if ( removeContactResult >= 0 )
-                          { lastAddresseeID = removeContactResult; }
-                        break;
-            }
+            case '5': lastAddresseeID = removeContact( addressees, lastAddresseeID ); break;
             case '6': changeUserPassword( userID, users ); break;
             case '9': return;
         }
